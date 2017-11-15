@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Алексей Удалов](https://up.htmlacademy.ru/javascript/11/user/247868).
-* Наставник: `Неизвестно`.
+* Наставник: [Александр Ивашкин](https://up.htmlacademy.ru/javascript/11/user/7280).
 
 ---
 
