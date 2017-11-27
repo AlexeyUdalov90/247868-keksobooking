@@ -52,11 +52,12 @@ var createAdverts = function (number) {
     'conditioner'
   ];
   for (var i = 0; i < number; i++) {
+    var coordinates = {x: getNumberFromRange(300, 900), y: getNumberFromRange(100, 500)};
     adverts[i] = {
       author: {avatar: 'img/avatars/user' + getLink(i + 1) + '.png'},
       offer: {
         title: titlesList.splice(getRandomItem(titlesList), 1)[0],
-        address: location.x + ', ' + location.y,
+        address: coordinates.x + ', ' + coordinates.y,
         price: getNumberFromRange(1000, 1000000),
         type: getRandomItem(typesList),
         rooms: getNumberFromRange(1, 5),
@@ -68,12 +69,31 @@ var createAdverts = function (number) {
         photos: []
       },
       location: {
-        x: getNumberFromRange(300, 900),
-        y: getNumberFromRange(100, 500)
+        x: coordinates.x,
+        y: coordinates.y
       }
     };
   }
   return adverts;
 };
 
-createAdverts(3);
+document.querySelector('.map').classList.remove('map--faded');
+var mapPinTemplate = document.querySelector('template').content.querySelector('.map__pin');
+var fragmentPins = document.createDocumentFragment();
+var mapPins = document.querySelector('.map__pins');
+
+var renderPin = function (advert) {
+  var pinElement = mapPinTemplate.cloneNode(true);
+
+  pinElement.style.left = advert.location.x - 40 / 2 + 'px';
+  pinElement.style.top = advert.location.y - 40 + 'px';
+  pinElement.querySelector('img').src = advert.author.avatar;
+
+  return pinElement;
+};
+
+createAdverts(8).forEach(function (advert) {
+  fragmentPins.appendChild(renderPin(advert));
+});
+
+mapPins.insertBefore(fragmentPins, mapPins.firstElementChild.nextElementSibling);
