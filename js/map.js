@@ -96,6 +96,21 @@ var renderPin = function (advert) {
   return pinElement;
 };
 
+var createFeatures = function (features) {
+  var fragmentFeatures = document.createDocumentFragment();
+  var featureItems = document.createElement('ul');
+  featureItems.className = '.popup__features';
+
+  features.forEach(function (feature) {
+    var featureElement = document.createElement('li');
+    featureElement.className = 'feature feature--' + feature;
+    featureItems.appendChild(featureElement);
+  });
+
+  fragmentFeatures.appendChild(featureItems);
+  return fragmentFeatures;
+};
+
 var renderCard = function (advert) {
   var cardElement = mapCardTemplate.cloneNode(true);
 
@@ -107,6 +122,7 @@ var renderCard = function (advert) {
   cardElement.querySelector('h4 + p').textContent = advert.offer.rooms + ' комнаты для ' + advert.offer.guests + ' гостей';
   cardElement.querySelector('h4 + p + p').textContent = 'Заезд после ' + advert.offer.checkin + ', выезд до ' + advert.offer.checkout;
   cardElement.querySelector('.popup__features + p').textContent = advert.offer.description;
+  cardElement.replaceChild(createFeatures(advert.offer.features), cardElement.querySelector('.popup__features'));
 
   return cardElement;
 };
