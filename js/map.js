@@ -1,5 +1,6 @@
 'use strict';
-var HEIGHT_PIN = 18;
+var SHIFT_LEFT = 5;
+var SHIFT_TOP = 40;
 var getRandomItem = function (array) {
   return array[Math.floor(Math.random() * array.length)];
 };
@@ -89,8 +90,8 @@ var getType = function (type) {
 var renderPin = function (advert) {
   var pinElement = mapPinTemplate.cloneNode(true);
 
-  pinElement.style.left = advert.location.x + 'px';
-  pinElement.style.top = advert.location.y - HEIGHT_PIN + 'px';
+  pinElement.style.left = advert.location.x - SHIFT_LEFT + 'px';
+  pinElement.style.top = advert.location.y - SHIFT_TOP + 'px';
   pinElement.querySelector('img').src = advert.author.avatar;
 
   return pinElement;
