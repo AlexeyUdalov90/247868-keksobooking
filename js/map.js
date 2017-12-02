@@ -9,13 +9,11 @@ var getNumberFromRange = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
-var shuffle = function () {
-  return Math.random() - 0.5;
-};
-
 var getRandomListItems = function (array) {
   var copyArray = array.slice();
-  copyArray.sort(shuffle);
+  copyArray.sort(function () {
+    return Math.random() - 0.5;
+  });
   copyArray.length = Math.floor(Math.random() * copyArray.length);
   return copyArray;
 };
