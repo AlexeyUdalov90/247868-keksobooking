@@ -9,17 +9,18 @@ var getNumberFromRange = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
-var getRandomListItems = function (array) {
-  var amount = Math.floor(Math.random() * array.length);
-  var copyArray = array.slice();
-  var items = [];
-  for (var i = 0; i < amount; i++) {
-    items[i] = copyArray.splice(getRandomItem(copyArray), 1)[0];
-  }
-  return items;
+var shuffle = function () {
+  return Math.random() - 0.5;
 };
 
-var getLink = function (number) {
+var getRandomListItems = function (array) {
+  var copyArray = array.slice();
+  copyArray.sort(shuffle);
+  copyArray.length = Math.floor(Math.random() * copyArray.length);
+  return copyArray;
+};
+
+var getNumberImage = function (number) {
   return (number < 10) ? '0' + number : number;
 };
 
@@ -55,7 +56,7 @@ var createAdverts = function (number) {
   for (var i = 0; i < number; i++) {
     var coordinates = {x: getNumberFromRange(300, 900), y: getNumberFromRange(100, 500)};
     adverts[i] = {
-      author: {avatar: 'img/avatars/user' + getLink(i + 1) + '.png'},
+      author: {avatar: 'img/avatars/user' + getNumberImage(i + 1) + '.png'},
       offer: {
         title: titlesList.splice(getRandomItem(titlesList), 1)[0],
         address: coordinates.x + ', ' + coordinates.y,
@@ -76,15 +77,6 @@ var createAdverts = function (number) {
     };
   }
   return adverts;
-};
-
-var getType = function (type) {
-  var typeNames = {
-    flat: 'Квартира',
-    bungalo: 'Бунгало',
-    house: 'Дом'
-  };
-  return typeNames[type];
 };
 
 var renderPin = function (advert) {
@@ -113,13 +105,18 @@ var createFeatures = function (features) {
 };
 
 var renderCard = function (advert) {
+  var typeNames = {
+    flat: 'Квартира',
+    bungalo: 'Бунгало',
+    house: 'Дом'
+  };
   var cardElement = mapCardTemplate.cloneNode(true);
 
   cardElement.querySelector('img').src = advert.author.avatar;
   cardElement.querySelector('h3').textContent = advert.offer.title;
   cardElement.querySelector('p > small').textContent = advert.offer.address;
   cardElement.querySelector('.popup__price').innerHTML = advert.offer.price + '&#x20bd;/ночь';
-  cardElement.querySelector('h4').textContent = getType(advert.offer.type);
+  cardElement.querySelector('h4').textContent = typeNames[advert.offer.type];
   cardElement.querySelector('h4 + p').textContent = advert.offer.rooms + ' комнаты для ' + advert.offer.guests + ' гостей';
   cardElement.querySelector('h4 + p + p').textContent = 'Заезд после ' + advert.offer.checkin + ', выезд до ' + advert.offer.checkout;
   cardElement.querySelector('.popup__features + p').textContent = advert.offer.description;
