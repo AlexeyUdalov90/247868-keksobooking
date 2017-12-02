@@ -123,22 +123,40 @@ var renderCard = function (advert) {
   return cardElement;
 };
 
+var disabledFieldset = function (bool) {
+  fieldsetsNoticeForm.forEach(function (fieldset) {
+    fieldset.disabled = bool;
+  });
+};
+
 var mapPinTemplate = document.querySelector('template').content.querySelector('.map__pin');
 var mapCardTemplate = document.querySelector('template').content.querySelector('.map__card');
 var fragmentPins = document.createDocumentFragment();
 var fragmentCard = document.createDocumentFragment();
 var mapPins = document.querySelector('.map__pins');
+var mainPin = document.querySelector('.map__pin--main');
 var map = document.querySelector('.map');
+var advertForm = document.querySelector('.notice__form');
+var fieldsetsNoticeForm = advertForm.querySelectorAll('fieldset');
 var advertsList = createAdverts(8);
 
-document.querySelector('.map').classList.remove('map--faded');
+disabledFieldset(true);
+
+//document.querySelector('.map').classList.remove('map--faded');
 
 advertsList.forEach(function (advert) {
   fragmentPins.appendChild(renderPin(advert));
 });
 
-mapPins.insertBefore(fragmentPins, mapPins.children[0].nextElementSibling);
+//mapPins.insertBefore(fragmentPins, mapPins.children[0].nextElementSibling);
 
 fragmentCard.appendChild(renderCard(advertsList[0]));
 
 map.insertBefore(fragmentCard, map.querySelector('.map__filters-container'));
+
+mainPin.addEventListener('mouseup', function () {
+  map.classList.remove('map--faded');
+  mapPins.insertBefore(fragmentPins, mapPins.children[0].nextElementSibling);
+  advertForm.classList.remove('notice__form--disabled');
+  disabledFieldset(false);
+});
