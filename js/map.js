@@ -144,7 +144,7 @@ var fieldsetsNoticeForm = advertForm.querySelectorAll('fieldset');
 var advertsList = createAdverts(8);
 
 var clickedPin = null;
-var showedPopup = null;
+var showedCard = null;
 
 
 disabledFieldset(true);
@@ -157,7 +157,8 @@ advertsList.forEach(function (advert) {
 mapPinsBlock.insertBefore(fragmentPins, mainPin);
 map.insertBefore(fragmentCard, map.querySelector('.map__filters-container'));
 
-var popups = map.querySelectorAll('.popup');
+var cards = map.querySelectorAll('.popup');
+var closeCards = map.querySelectorAll('.popup .popup__close');
 var pins = map.querySelectorAll('.map__pin');
 
 mainPin.addEventListener('mouseup', function () {
@@ -170,19 +171,19 @@ mainPin.addEventListener('mouseup', function () {
 });
 
 var pinClickHeandler = function (evt) {
-
   if (!evt.currentTarget.classList.contains('map__pin--main')) {
-    if (clickedPin && showedPopup) {
+    if (clickedPin && showedCard) {
       clickedPin.classList.remove('map__pin--active');
-      showedPopup.classList.add('hidden');
+      showedCard.classList.add('hidden');
     }
     clickedPin = evt.currentTarget;
     clickedPin.classList.add('map__pin--active');
     var srcImagePin = evt.currentTarget.children[0].src;
-    popups.forEach(function (popup) {
-      if (srcImagePin === popup.querySelector('img').src) {
-        showedPopup = popup;
-        showedPopup.classList.remove('hidden');
+    cards.forEach(function (card) {
+      if (srcImagePin === card.querySelector('img').src) {
+        showedCard = card;
+        showedCard.classList.remove('hidden');
+        document.addEventListener('keydown', popupEscPressHeandler);
       }
     });
   }
@@ -190,4 +191,20 @@ var pinClickHeandler = function (evt) {
 
 pins.forEach(function (pin) {
   pin.addEventListener('click', pinClickHeandler);
+});
+
+var popupEscPressHeandler = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    closePopup();
+  }
+};
+
+var closePopup = function () {
+  showedCard.classList.add('hidden');
+  clickedPin.classList.remove('map__pin--active');
+  document.removeEventListener('keydown', popupEscPressHeandler);
+};
+
+closeCards.forEach(function (closeCard) {
+  closeCard.addEventListener('click', closePopup);
 });
