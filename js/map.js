@@ -1,6 +1,7 @@
 'use strict';
 var SHIFT_LEFT = 5;
 var SHIFT_TOP = 40;
+var ESC_KEYCODE = 27;
 var getRandomItem = function (array) {
   return array[Math.floor(Math.random() * array.length)];
 };
@@ -83,6 +84,8 @@ var renderPin = function (advert) {
   pinElement.style.left = advert.location.x - SHIFT_LEFT + 'px';
   pinElement.style.top = advert.location.y - SHIFT_TOP + 'px';
   pinElement.querySelector('img').src = advert.author.avatar;
+  pinElement.classList.add('hidden');
+  pinElement.addEventListener('click', pinClickHandler);
 
   return pinElement;
 };
@@ -110,6 +113,7 @@ var renderCard = function (advert) {
   };
   var cardElement = mapCardTemplate.cloneNode(true);
 
+  cardElement.classList.add('hidden');
   cardElement.querySelector('img').src = advert.author.avatar;
   cardElement.querySelector('h3').textContent = advert.offer.title;
   cardElement.querySelector('p > small').textContent = advert.offer.address;
@@ -119,26 +123,81 @@ var renderCard = function (advert) {
   cardElement.querySelector('h4 + p + p').textContent = 'Заезд после ' + advert.offer.checkin + ', выезд до ' + advert.offer.checkout;
   cardElement.querySelector('.popup__features + p').textContent = advert.offer.description;
   cardElement.replaceChild(createFeatures(advert.offer.features), cardElement.querySelector('.popup__features'));
+  cardElement.querySelector('.popup__close').addEventListener('click', closePopup);
 
   return cardElement;
+};
+
+var disableItems = function (array, bool) {
+  array.forEach(function (item) {
+    item.disabled = bool;
+  });
 };
 
 var mapPinTemplate = document.querySelector('template').content.querySelector('.map__pin');
 var mapCardTemplate = document.querySelector('template').content.querySelector('.map__card');
 var fragmentPins = document.createDocumentFragment();
 var fragmentCard = document.createDocumentFragment();
-var mapPins = document.querySelector('.map__pins');
+var mapPinsBlock = document.querySelector('.map__pins');
+var mainPin = document.querySelector('.map__pin--main');
 var map = document.querySelector('.map');
+var advertForm = document.querySelector('.notice__form');
+var fieldsetsNoticeForm = advertForm.querySelectorAll('fieldset');
 var advertsList = createAdverts(8);
 
-document.querySelector('.map').classList.remove('map--faded');
+var clickedPin = null;
+var showedCard = null;
+
+var pinClickHandler = function (evt) {
+  if (!evt.currentTarget.classList.contains('map__pin--main')) {
+    if (clickedPin && showedCard) {
+      clickedPin.classList.remove('map__pin--active');
+      showedCard.classList.add('hidden');
+    }
+    clickedPin = evt.currentTarget;
+    clickedPin.classList.add('map__pin--active');
+    var srcImagePin = evt.currentTarget.children[0].src;
+    for (var i = 0; i < cards.length; i++) {
+      if (srcImagePin === cards[i].querySelector('img').src) {
+        showedCard = cards[i];
+        showedCard.classList.remove('hidden');
+        document.addEventListener('keydown', popupEscPressHandler);
+        break;
+      }
+    }
+  }
+};
+
+var popupEscPressHandler = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    closePopup();
+  }
+};
+
+var closePopup = function () {
+  showedCard.classList.add('hidden');
+  clickedPin.classList.remove('map__pin--active');
+  document.removeEventListener('keydown', popupEscPressHandler);
+};
+
+disableItems(fieldsetsNoticeForm, true);
 
 advertsList.forEach(function (advert) {
   fragmentPins.appendChild(renderPin(advert));
+  fragmentCard.appendChild(renderCard(advert));
 });
 
-mapPins.insertBefore(fragmentPins, mapPins.children[0].nextElementSibling);
-
-fragmentCard.appendChild(renderCard(advertsList[0]));
-
+mapPinsBlock.insertBefore(fragmentPins, mainPin);
 map.insertBefore(fragmentCard, map.querySelector('.map__filters-container'));
+
+var cards = map.querySelectorAll('.popup');
+var pins = map.querySelectorAll('.map__pin');
+
+mainPin.addEventListener('mouseup', function () {
+  map.classList.remove('map--faded');
+  pins.forEach(function (pin) {
+    pin.classList.remove('hidden');
+  });
+  advertForm.classList.remove('notice__form--disabled');
+  disableItems(fieldsetsNoticeForm, false);
+});
