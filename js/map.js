@@ -85,7 +85,7 @@ var renderPin = function (advert) {
   pinElement.style.top = advert.location.y - SHIFT_TOP + 'px';
   pinElement.querySelector('img').src = advert.author.avatar;
   pinElement.classList.add('hidden');
-  pinElement.addEventListener('click', pinClickHeandler);
+  pinElement.addEventListener('click', pinClickHandler);
 
   return pinElement;
 };
@@ -128,7 +128,7 @@ var renderCard = function (advert) {
   return cardElement;
 };
 
-var disabledItems = function (array, bool) {
+var disableItems = function (array, bool) {
   array.forEach(function (item) {
     item.disabled = bool;
   });
@@ -148,7 +148,7 @@ var advertsList = createAdverts(8);
 var clickedPin = null;
 var showedCard = null;
 
-var pinClickHeandler = function (evt) {
+var pinClickHandler = function (evt) {
   if (!evt.currentTarget.classList.contains('map__pin--main')) {
     if (clickedPin && showedCard) {
       clickedPin.classList.remove('map__pin--active');
@@ -161,14 +161,14 @@ var pinClickHeandler = function (evt) {
       if (srcImagePin === cards[i].querySelector('img').src) {
         showedCard = cards[i];
         showedCard.classList.remove('hidden');
-        document.addEventListener('keydown', popupEscPressHeandler);
+        document.addEventListener('keydown', popupEscPressHandler);
         break;
       }
     }
   }
 };
 
-var popupEscPressHeandler = function (evt) {
+var popupEscPressHandler = function (evt) {
   if (evt.keyCode === ESC_KEYCODE) {
     closePopup();
   }
@@ -177,10 +177,10 @@ var popupEscPressHeandler = function (evt) {
 var closePopup = function () {
   showedCard.classList.add('hidden');
   clickedPin.classList.remove('map__pin--active');
-  document.removeEventListener('keydown', popupEscPressHeandler);
+  document.removeEventListener('keydown', popupEscPressHandler);
 };
 
-disabledItems(fieldsetsNoticeForm, true);
+disableItems(fieldsetsNoticeForm, true);
 
 advertsList.forEach(function (advert) {
   fragmentPins.appendChild(renderPin(advert));
@@ -199,15 +199,5 @@ mainPin.addEventListener('mouseup', function () {
     pin.classList.remove('hidden');
   });
   advertForm.classList.remove('notice__form--disabled');
-  disabledItems(fieldsetsNoticeForm, false);
+  disableItems(fieldsetsNoticeForm, false);
 });
-
-
-// pins.forEach(function (pin) {
-//   pin.addEventListener('click', pinClickHeandler);
-// });
-
-
-// closeCards.forEach(function (closeCard) {
-//   closeCard.addEventListener('click', closePopup);
-// });
