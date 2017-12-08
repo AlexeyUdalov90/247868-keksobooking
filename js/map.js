@@ -125,9 +125,9 @@ var renderCard = function (advert) {
 };
 
 var disableItems = function (array, bool) {
-  array.forEach(function (item) {
-    item.disabled = bool;
-  });
+  for (var i = 0; i < array.length; i++) {
+    array[i].disabled = bool;
+  }
 };
 
 var mapPinTemplate = document.querySelector('template').content.querySelector('.map__pin');
@@ -202,6 +202,8 @@ mainPin.addEventListener('mouseup', function () {
   });
   advertForm.classList.remove('notice__form--disabled');
   disableItems(fieldsetsNoticeForm, false);
+  changeMinValue(inputPrice, typesHouseroom[selectType.value].price);
+  changeCapacityHandler();
 });
 
 var selectTimeIn = advertForm.querySelector('#timein');
@@ -228,3 +230,29 @@ selectTimeIn.addEventListener('change', function () {
 selectTimeOut.addEventListener('change', function () {
   syncSelect(selectTimeOut.value, selectTimeIn);
 });
+
+var changeMinValue = function (input, value) {
+  input.min = value;
+};
+
+selectType.addEventListener('change', function () {
+  changeMinValue(inputPrice, typesHouseroom[selectType.value].price);
+});
+
+var changeCapacityHandler = function () {
+  var valueRoom = selectRooms.value;
+  disableItems(selectCapacity.options, false);
+  for (var i = 0; i < selectCapacity.options.length; i++) {
+    var itemCapacity = selectCapacity.options[i];
+    var valueCapacity = itemCapacity.value;
+    if (valueRoom === '100' && valueCapacity === '0') {
+      itemCapacity.selected = true;
+    } else if (valueRoom >= valueCapacity && valueRoom !== '100' && valueCapacity !== '0') {
+      itemCapacity.selected = true;
+    } else {
+      itemCapacity.disabled = true;
+    }
+  }
+};
+
+selectRooms.addEventListener('change', changeCapacityHandler);
