@@ -256,3 +256,45 @@ var changeCapacityHandler = function () {
 };
 
 selectRooms.addEventListener('change', changeCapacityHandler);
+
+var drawColorBorder = function (item, color) {
+  item.style.borderColor = color;
+};
+
+inputPrice.addEventListener('invalid', function () {
+  if (inputPrice.validity.rangeUnderflow) {
+    inputPrice.setCustomValidity('Цена за ночь должна быть больше чем ' + inputPrice.min);
+    drawColorBorder(inputPrice, 'red');
+  } else if (inputPrice.validity.rangeOverflow) {
+    inputPrice.setCustomValidity('Цена за ночь не должна быть больше чем ' + inputPrice.max);
+    drawColorBorder(inputPrice, 'red');
+  } else if (inputPrice.validity.valueMissing) {
+    inputPrice.setCustomValidity('Поле обязательно для заполнения');
+    drawColorBorder(inputPrice, 'red');
+  } else {
+    inputPrice.setCustomValidity('');
+  }
+});
+
+inputTitle.addEventListener('invalid', function () {
+  if (inputTitle.validity.tooShort) {
+    inputTitle.setCustomValidity('Заголовок должен состоять минимум из ' + inputTitle.minlenght + ' символов');
+    drawColorBorder(inputTitle, 'red');
+  } else if (inputTitle.validity.tooLong) {
+    inputTitle.setCustomValidity('Заголовок должен состоять максимум из ' + inputTitle.maxlength + ' символов');
+    drawColorBorder(inputTitle, 'red');
+  } else if (inputTitle.validity.valueMissing) {
+    inputTitle.setCustomValidity('Поле обязательно для заполнения');
+    drawColorBorder(inputTitle, 'red');
+  } else {
+    inputTitle.setCustomValidity('');
+  }
+});
+
+inputPrice.addEventListener('change', function () {
+  drawColorBorder(inputPrice, '');
+});
+
+inputTitle.addEventListener('change', function () {
+  drawColorBorder(inputTitle, '');
+});
