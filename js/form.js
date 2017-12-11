@@ -59,7 +59,7 @@
   });
 
   selectType.addEventListener('change', function () {
-    changeMinValue(inputPrice, pricesHouseroom[selectType.value].price);
+    changeMinValue(inputPrice, pricesHouseroom[selectType.value]);
   });
 
   selectRooms.addEventListener('change', function () {
@@ -107,7 +107,7 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     changeSelectOptions(selectCapacity, selectRooms.value);
-    changeMinValue(inputPrice, pricesHouseroom[selectType.value].price);
+    changeMinValue(inputPrice, pricesHouseroom[selectType.value]);
   });
 
 })();
