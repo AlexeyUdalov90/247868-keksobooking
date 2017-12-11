@@ -4,8 +4,8 @@
   var SHIFT_PIN_LEFT = 5;
   var SHIFT_PIN_TOP = 40;
   var mapPinTemplate = document.querySelector('template').content.querySelector('.map__pin');
-  var mainPin = document.querySelector('.map__pin--main');
   var map = document.querySelector('.map');
+  var mainPin = map.querySelector('.map__pin--main');
   var advertForm = document.querySelector('.notice__form');
   var fieldsetsNoticeForm = advertForm.querySelectorAll('fieldset');
 
