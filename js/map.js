@@ -12,7 +12,7 @@
 
   window.map = {
     pinClickHandler: function (evt) {
-      var cards = map.querySelectorAll('.popup');
+      var cards = document.querySelectorAll('.map .popup');
       if (!evt.currentTarget.classList.contains('map__pin--main')) {
         if (clickedPin && showedCard) {
           clickedPin.classList.remove('map__pin--active');
