@@ -202,8 +202,6 @@ mainPin.addEventListener('mouseup', function () {
   });
   advertForm.classList.remove('notice__form--disabled');
   disableItems(fieldsetsNoticeForm, false);
-  changeMinValue(inputPrice, typesHouseroom[selectType.value].price);
-  changeCapacityHandler();
 });
 
 var selectTimeIn = advertForm.querySelector('#timein');
@@ -278,7 +276,7 @@ inputPrice.addEventListener('invalid', function () {
 
 inputTitle.addEventListener('invalid', function () {
   if (inputTitle.validity.tooShort) {
-    inputTitle.setCustomValidity('Заголовок должен состоять минимум из ' + inputTitle.minlenght + ' символов');
+    inputTitle.setCustomValidity('Заголовок должен состоять минимум из ' + inputTitle.minlength + ' символов');
     drawColorBorder(inputTitle, 'red');
   } else if (inputTitle.validity.tooLong) {
     inputTitle.setCustomValidity('Заголовок должен состоять максимум из ' + inputTitle.maxlength + ' символов');
@@ -297,4 +295,9 @@ inputPrice.addEventListener('change', function () {
 
 inputTitle.addEventListener('change', function () {
   drawColorBorder(inputTitle, '');
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+  changeMinValue(inputPrice, typesHouseroom[selectType.value].price);
+  changeCapacityHandler();
 });
