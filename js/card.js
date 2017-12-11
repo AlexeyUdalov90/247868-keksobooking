@@ -20,7 +20,7 @@
       cardElement.querySelector('h3').textContent = advert.offer.title;
       cardElement.querySelector('p > small').textContent = advert.offer.address;
       cardElement.querySelector('.popup__price').innerHTML = advert.offer.price + '&#x20bd;/ночь';
-      cardElement.querySelector('h4').textContent = typesHouseroom[advert.offer.type].name;
+      cardElement.querySelector('h4').textContent = typesHouseroom[advert.offer.type];
       cardElement.querySelector('h4 + p').textContent = advert.offer.rooms + ' комнаты для ' + advert.offer.guests + ' гостей';
       cardElement.querySelector('h4 + p + p').textContent = 'Заезд после ' + advert.offer.checkin + ', выезд до ' + advert.offer.checkout;
       cardElement.querySelector('.popup__features + p').textContent = advert.offer.description;
