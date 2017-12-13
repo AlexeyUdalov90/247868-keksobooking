@@ -10,11 +10,22 @@
   var selectRooms = advertForm.querySelector('#room_number');
   var selectCapacity = advertForm.querySelector('#capacity');
   var inputTitle = advertForm.querySelector('#title');
+  var resetBtn = advertForm.querySelector('.form__reset');
+  var features = advertForm.querySelectorAll('.features input[type = "checkbox"]');
+  var description = advertForm.querySelector('#description');
   var pricesHouseroom = {
     flat: 1000,
     bungalo: 0,
     house: 5000,
     palace: 10000
+  };
+
+  var getStandSelectedValue = function (select) {
+    for (var i = 0; i < select.options.length; i++) {
+      if (select.options[i].hasAttribute('selected')) {
+        select.options[i].selected = true;
+      }
+    }
   };
 
   var syncSelect = function (select, value) {
@@ -47,6 +58,21 @@
     input.min = value;
   };
 
+  var resetClickHandler = function (evt) {
+    evt.preventDefault();
+    inputTitle.value = '';
+    inputPrice.value = inputPrice.getAttribute('value');
+    getStandSelectedValue(selectType);
+    getStandSelectedValue(selectRooms);
+    getStandSelectedValue(selectTimeIn);
+    syncSelect(selectTimeOut, selectTimeIn.value);
+    features.forEach(function (item) {
+      item.checked = false;
+    });
+    changeSelectOptions(selectCapacity, selectRooms.value);
+    changeMinValue(inputPrice, pricesHouseroom[selectType.value]);
+    description.value = '';
+  };
 
   window.util.disableItems(fieldsetsNoticeForm, true);
 
@@ -104,6 +130,8 @@
   inputTitle.addEventListener('change', function () {
     window.util.drawColorBorder(inputTitle, '');
   });
+
+  resetBtn.addEventListener('click', resetClickHandler);
 
   document.addEventListener('DOMContentLoaded', function () {
     changeSelectOptions(selectCapacity, selectRooms.value);
