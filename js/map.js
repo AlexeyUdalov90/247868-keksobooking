@@ -4,6 +4,8 @@
   var SHIFT_MAINPIN_Y = 45;
   var UP_LIMIT_Y = 100;
   var DOWN_LIMIT_Y = 655;
+  var LEFT_LIMIT_X = 3;
+  var RIGHT_LIMIT_X = 1197;
   var advertsList = window.data.createAdverts(8);
   var fragmentPins = document.createDocumentFragment();
   var fragmentCard = document.createDocumentFragment();
@@ -20,6 +22,24 @@
 
   mapPinsBlock.insertBefore(fragmentPins, mainPin);
   map.insertBefore(fragmentCard, map.querySelector('.map__filters-container'));
+
+  var getCoordY = function (y) {
+    if (y < UP_LIMIT_Y) {
+      return UP_LIMIT_Y;
+    } else if (y > DOWN_LIMIT_Y) {
+      return DOWN_LIMIT_Y;
+    }
+    return y;
+  };
+
+  var getCoordX = function (x) {
+    if (x < LEFT_LIMIT_X) {
+      return LEFT_LIMIT_X;
+    } else if (x > RIGHT_LIMIT_X) {
+      return RIGHT_LIMIT_X;
+    }
+    return x;
+  };
 
   mainPin.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
@@ -41,15 +61,9 @@
         y: moveEvt.clientY
       };
 
-      var coordY = mainPin.offsetTop - shift.y;
-      if (coordY < UP_LIMIT_Y) {
-        mainPin.style.top = UP_LIMIT_Y + 'px';
-      } else if (coordY > DOWN_LIMIT_Y) {
-        mainPin.style.top = DOWN_LIMIT_Y + 'px';
-      } else {
-        mainPin.style.top = coordY + 'px';
-      }
-      mainPin.style.left = (mainPin.offsetLeft - shift.x) + 'px';
+      mainPin.style.top = getCoordY(mainPin.offsetTop - shift.y) + 'px';
+      mainPin.style.left = getCoordX(mainPin.offsetLeft - shift.x) + 'px';
+
       inputAddress.value = 'x: ' + (parseFloat(mainPin.style.left) - SHIFT_MAINPIN_X) + ', y: ' + (parseFloat(mainPin.style.top) + SHIFT_MAINPIN_Y);
     };
 
