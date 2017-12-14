@@ -13,47 +13,47 @@
   var mainPin = map.querySelector('.map__pin--main');
   var advertForm = document.querySelector('.notice__form');
   var inputAddress = advertForm.querySelector('#address');
-  var clickedPin = null;
-  var showedCard = null;
+  // var clickedPin = null;
+  // var showedCard = null;
 
   window.map = {
-    pinClickHandler: function (evt) {
-      var cards = document.querySelectorAll('.map .popup');
-      if (!evt.currentTarget.classList.contains('map__pin--main')) {
-        if (clickedPin && showedCard) {
-          clickedPin.classList.remove('map__pin--active');
-          showedCard.classList.add('hidden');
-        }
-        clickedPin = evt.currentTarget;
-        clickedPin.classList.add('map__pin--active');
-        var srcImagePin = evt.currentTarget.children[0].src;
-        for (var i = 0; i < cards.length; i++) {
-          if (srcImagePin === cards[i].querySelector('img').src) {
-            showedCard = cards[i];
-            showedCard.classList.remove('hidden');
-            document.addEventListener('keydown', window.map.popupEscPressHandler);
-            break;
-          }
-        }
-      }
-    },
+    // pinClickHandler: function (evt) {
+    //   var cards = document.querySelectorAll('.map .popup');
+    //   if (!evt.currentTarget.classList.contains('map__pin--main')) {
+    //     if (clickedPin && showedCard) {
+    //       clickedPin.classList.remove('map__pin--active');
+    //       showedCard.classList.add('hidden');
+    //     }
+    //     clickedPin = evt.currentTarget;
+    //     clickedPin.classList.add('map__pin--active');
+    //     var srcImagePin = evt.currentTarget.children[0].src;
+    //     for (var i = 0; i < cards.length; i++) {
+    //       if (srcImagePin === cards[i].querySelector('img').src) {
+    //         showedCard = cards[i];
+    //         showedCard.classList.remove('hidden');
+    //         document.addEventListener('keydown', window.map.popupEscPressHandler);
+    //         break;
+    //       }
+    //     }
+    //   }
+    // },
+    //
+    // closePopup: function () {
+    //   showedCard.classList.add('hidden');
+    //   clickedPin.classList.remove('map__pin--active');
+    //   document.removeEventListener('keydown', window.map.popupEscPressHandler);
+    // },
 
-    closePopup: function () {
-      showedCard.classList.add('hidden');
-      clickedPin.classList.remove('map__pin--active');
-      document.removeEventListener('keydown', window.map.popupEscPressHandler);
-    },
-
-    popupEscPressHandler: function (evt) {
+    escPressHandler: function (evt) {
       if (evt.keyCode === ESC_KEYCODE) {
-        window.map.closePopup();
+        window.card.closeClickHandler();
       }
     }
   };
 
   advertsList.forEach(function (advert) {
-    fragmentPins.appendChild(window.pin.renderPin(advert));
-    fragmentCard.appendChild(window.card.renderCard(advert));
+    fragmentPins.appendChild(window.pin.render(advert));
+    fragmentCard.appendChild(window.card.render(advert));
   });
 
   mapPinsBlock.insertBefore(fragmentPins, mainPin);
