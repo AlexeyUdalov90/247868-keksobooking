@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+  var ESC_KEYCODE = 27;
   var mapCardTemplate = document.querySelector('template').content.querySelector('.map__card');
   var fragmentFeatures = document.createDocumentFragment();
 
@@ -25,7 +26,13 @@
         });
         evt.target.classList.remove('map__pin--active');
       }
-      document.removeEventListener('keydown', window.map.escPressHandler);
+      document.removeEventListener('keydown', window.card.escPressHandler);
+    },
+
+    escPressHandler: function (evt) {
+      if (evt.keyCode === ESC_KEYCODE) {
+        window.card.closeClickHandler(evt);
+      }
     },
 
     render: function (advert) {
