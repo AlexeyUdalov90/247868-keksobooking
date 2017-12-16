@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+  var ESC_KEYCODE = 27;
   var mapCardTemplate = document.querySelector('template').content.querySelector('.map__card');
   var fragmentFeatures = document.createDocumentFragment();
 
@@ -12,7 +13,29 @@
   };
 
   window.card = {
-    renderCard: function (advert) {
+    closeClickHandler: function (evt) {
+      if (evt.target.className === 'popup__close') {
+        evt.target.parentElement.classList.add('hidden');
+        document.querySelector('.map__pins .map__pin--active').classList.remove('map__pin--active');
+      } else {
+        var popups = document.querySelectorAll('.map .map__card');
+        popups.forEach(function (popup) {
+          if (!popup.classList.contains('hidden')) {
+            popup.classList.add('hidden');
+          }
+        });
+        evt.target.classList.remove('map__pin--active');
+      }
+      document.removeEventListener('keydown', window.card.escPressHandler);
+    },
+
+    escPressHandler: function (evt) {
+      if (evt.keyCode === ESC_KEYCODE) {
+        window.card.closeClickHandler(evt);
+      }
+    },
+
+    render: function (advert) {
       var cardElement = mapCardTemplate.cloneNode(true);
 
       cardElement.classList.add('hidden');
@@ -25,7 +48,7 @@
       cardElement.querySelector('h4 + p + p').textContent = 'Заезд после ' + advert.offer.checkin + ', выезд до ' + advert.offer.checkout;
       cardElement.querySelector('.popup__features + p').textContent = advert.offer.description;
       cardElement.replaceChild(createFeatures(advert.offer.features), cardElement.querySelector('.popup__features'));
-      cardElement.querySelector('.popup__close').addEventListener('click', window.map.closePopup);
+      cardElement.querySelector('.popup__close').addEventListener('click', window.card.closeClickHandler);
 
       return cardElement;
     }

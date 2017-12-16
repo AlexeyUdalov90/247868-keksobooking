@@ -13,12 +13,11 @@
   var resetBtn = advertForm.querySelector('.form__reset');
   var features = advertForm.querySelectorAll('.features input[type = "checkbox"]');
   var description = advertForm.querySelector('#description');
-  var pricesHouseroom = {
-    flat: 1000,
-    bungalo: 0,
-    house: 5000,
-    palace: 10000
-  };
+
+  var minPricesHouseroom = ['1000', '0', '5000', '10000'];
+  var typesHouseroom = ['flat', 'bungalo', 'house', 'palace'];
+  var timesIn = ['12:00', '13:00', '14:00'];
+  var timesOut = ['12:00', '13:00', '14:00'];
 
   var getStandSelectedValue = function (select) {
     for (var i = 0; i < select.options.length; i++) {
@@ -28,14 +27,8 @@
     }
   };
 
-  var syncSelect = function (select, value) {
-    for (var i = 0; i < select.options.length; i++) {
-      if (select.options[i].value === value) {
-        select.selectedIndex = -1;
-        select.options[i].selected = true;
-        break;
-      }
-    }
+  var syncValues = function (element, value) {
+    element.value = value;
   };
 
   var changeSelectOptions = function () {
@@ -54,8 +47,8 @@
     }
   };
 
-  var changeMinValue = function (input, value) {
-    input.min = value;
+  var changeMinValue = function (element, value) {
+    element.min = value;
   };
 
   var resetClickHandler = function (evt) {
@@ -65,27 +58,27 @@
     getStandSelectedValue(selectType);
     getStandSelectedValue(selectRooms);
     getStandSelectedValue(selectTimeIn);
-    syncSelect(selectTimeOut, selectTimeIn.value);
+    window.synchronizeFields(selectType, inputPrice, typesHouseroom, minPricesHouseroom, changeMinValue);
     features.forEach(function (item) {
       item.checked = false;
     });
     changeSelectOptions(selectCapacity, selectRooms.value);
-    changeMinValue(inputPrice, pricesHouseroom[selectType.value]);
+    window.synchronizeFields(selectType, inputPrice, changeMinValue);
     description.value = '';
   };
 
   window.util.disableItems(fieldsetsNoticeForm, true);
 
   selectTimeIn.addEventListener('change', function () {
-    syncSelect(selectTimeOut, selectTimeIn.value);
+    window.synchronizeFields(selectTimeIn, selectTimeOut, timesIn, timesOut, syncValues);
   });
 
   selectTimeOut.addEventListener('change', function () {
-    syncSelect(selectTimeIn, selectTimeOut.value);
+    window.synchronizeFields(selectTimeOut, selectTimeIn, timesOut, timesIn, syncValues);
   });
 
   selectType.addEventListener('change', function () {
-    changeMinValue(inputPrice, pricesHouseroom[selectType.value]);
+    window.synchronizeFields(selectType, inputPrice, typesHouseroom, minPricesHouseroom, changeMinValue);
   });
 
   selectRooms.addEventListener('change', function () {
@@ -135,7 +128,7 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     changeSelectOptions(selectCapacity, selectRooms.value);
-    changeMinValue(inputPrice, pricesHouseroom[selectType.value]);
+    window.synchronizeFields(selectType, inputPrice, typesHouseroom, minPricesHouseroom, changeMinValue);
   });
 
 })();
