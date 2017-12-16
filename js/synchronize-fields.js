@@ -1,20 +1,16 @@
 'use strict';
 
 (function () {
-  var pricesHouseroom = {
-    flat: '1000',
-    bungalo: '0',
-    house: '5000',
-    palace: '10000'
-  };
 
-  window.synchronizeFields = function (field1, field2, callback) {
-    var value;
-    if (pricesHouseroom[field1.value]) {
-      value = pricesHouseroom[field1.value];
-    } else {
-      value = field1.value;
+  window.synchronizeFields = function (field1, field2, array1, array2, callback) {
+    var value = field1.value;
+    for (var i = 0; i < array1.length; i++) {
+      if (value === array1[i]) {
+        value = array2[i];
+        break;
+      }
     }
+
     if (typeof callback === 'function') {
       callback(field2, value);
     }

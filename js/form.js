@@ -14,6 +14,11 @@
   var features = advertForm.querySelectorAll('.features input[type = "checkbox"]');
   var description = advertForm.querySelector('#description');
 
+  var minPricesHouseroom = ['1000', '0', '5000', '10000'];
+  var typesHouseroom = ['flat', 'bungalo', 'house', 'palace'];
+  var timesIn = ['12:00', '13:00', '14:00'];
+  var timesOut = ['12:00', '13:00', '14:00'];
+
   var getStandSelectedValue = function (select) {
     for (var i = 0; i < select.options.length; i++) {
       if (select.options[i].hasAttribute('selected')) {
@@ -53,7 +58,7 @@
     getStandSelectedValue(selectType);
     getStandSelectedValue(selectRooms);
     getStandSelectedValue(selectTimeIn);
-    window.synchronizeFields(selectTimeIn, selectTimeOut, syncValues);
+    window.synchronizeFields(selectType, inputPrice, typesHouseroom, minPricesHouseroom, changeMinValue);
     features.forEach(function (item) {
       item.checked = false;
     });
@@ -65,15 +70,15 @@
   window.util.disableItems(fieldsetsNoticeForm, true);
 
   selectTimeIn.addEventListener('change', function () {
-    window.synchronizeFields(selectTimeIn, selectTimeOut, syncValues);
+    window.synchronizeFields(selectTimeIn, selectTimeOut, timesIn, timesOut, syncValues);
   });
 
   selectTimeOut.addEventListener('change', function () {
-    window.synchronizeFields(selectTimeOut, selectTimeIn, syncValues);
+    window.synchronizeFields(selectTimeOut, selectTimeIn, timesOut, timesIn, syncValues);
   });
 
   selectType.addEventListener('change', function () {
-    window.synchronizeFields(selectType, inputPrice, changeMinValue);
+    window.synchronizeFields(selectType, inputPrice, typesHouseroom, minPricesHouseroom, changeMinValue);
   });
 
   selectRooms.addEventListener('change', function () {
@@ -123,7 +128,7 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     changeSelectOptions(selectCapacity, selectRooms.value);
-    window.synchronizeFields(selectType, inputPrice, changeMinValue);
+    window.synchronizeFields(selectType, inputPrice, typesHouseroom, minPricesHouseroom, changeMinValue);
   });
 
 })();
