@@ -6,22 +6,47 @@
   var DOWN_LIMIT_Y = 655;
   var LEFT_LIMIT_X = 3;
   var RIGHT_LIMIT_X = 1197;
-  var advertsList = window.data.createAdverts(8);
-  var fragmentPins = document.createDocumentFragment();
-  var fragmentCard = document.createDocumentFragment();
+  var AMOUNT_ADVERT = 8;
   var map = document.querySelector('.map');
   var mapPinsBlock = map.querySelector('.map__pins');
   var mainPin = map.querySelector('.map__pin--main');
   var advertForm = document.querySelector('.notice__form');
   var inputAddress = advertForm.querySelector('#address');
 
-  advertsList.forEach(function (advert) {
-    fragmentPins.appendChild(window.pin.render(advert));
-    fragmentCard.appendChild(window.card.render(advert));
-  });
+  var successHandler = function (adverts) {
+    var fragmentPins = document.createDocumentFragment();
+    var fragmentCard = document.createDocumentFragment();
 
-  mapPinsBlock.insertBefore(fragmentPins, mainPin);
-  map.insertBefore(fragmentCard, map.querySelector('.map__filters-container'));
+    for (var i = 0; i < AMOUNT_ADVERT; i++) {
+      fragmentPins.appendChild(window.pin.render(adverts[i]));
+      fragmentCard.appendChild(window.card.render(adverts[i]));
+    }
+
+    mapPinsBlock.insertBefore(fragmentPins, mainPin);
+    map.insertBefore(fragmentCard, map.querySelector('.map__filters-container'));
+  };
+
+  var errorHandler = function (message) {
+    var errorMessage = document.createElement('div');
+    errorMessage.style.position = 'fixed';
+    errorMessage.style.right = '20px';
+    errorMessage.style.top = '20px';
+    errorMessage.style.zIndex = '100';
+    errorMessage.style.margin = '0';
+    errorMessage.style.padding = '10px';
+    errorMessage.style.fontSize = '18px';
+    errorMessage.style.fontWeight = '700';
+    errorMessage.style.color = 'rgb(255, 0, 0)';
+    errorMessage.style.borderRadius = '10px';
+    errorMessage.style.backgroundColor = 'rgba(255, 255, 255, 0.6)';
+    errorMessage.textContent = message;
+
+    document.body.insertAdjacentElement('afterbegin', errorMessage);
+
+    setTimeout(function () {
+      document.body.removeChild(errorMessage);
+    }, 10000);
+  };
 
   var getCoordY = function (y) {
     if (y < UP_LIMIT_Y) {
@@ -40,6 +65,8 @@
     }
     return x;
   };
+
+  window.backend.load(successHandler, errorHandler);
 
   mainPin.addEventListener('mousedown', function (evt) {
     evt.preventDefault();

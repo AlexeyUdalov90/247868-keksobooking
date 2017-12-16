@@ -10,6 +10,7 @@
   var selectRooms = advertForm.querySelector('#room_number');
   var selectCapacity = advertForm.querySelector('#capacity');
   var inputTitle = advertForm.querySelector('#title');
+  var inputAddress = advertForm.querySelector('#address');
   var resetBtn = advertForm.querySelector('.form__reset');
   var features = advertForm.querySelectorAll('.features input[type = "checkbox"]');
   var description = advertForm.querySelector('#description');
@@ -51,9 +52,10 @@
     element.min = value;
   };
 
-  var resetClickHandler = function (evt) {
-    evt.preventDefault();
+  var resetHandler = function () {
     inputTitle.value = '';
+    inputAddress.value = 'x: 0, y: 0';
+    inputAddress.value = '';
     inputPrice.value = inputPrice.getAttribute('value');
     getStandSelectedValue(selectType);
     getStandSelectedValue(selectRooms);
@@ -65,6 +67,28 @@
     changeSelectOptions(selectCapacity, selectRooms.value);
     window.synchronizeFields(selectType, inputPrice, changeMinValue);
     description.value = '';
+  };
+
+  var errorHandler = function (message) {
+    var errorMessage = document.createElement('div');
+    errorMessage.style.position = 'fixed';
+    errorMessage.style.right = '20px';
+    errorMessage.style.top = '20px';
+    errorMessage.style.zIndex = '100';
+    errorMessage.style.margin = '0';
+    errorMessage.style.padding = '10px';
+    errorMessage.style.fontSize = '18px';
+    errorMessage.style.fontWeight = '700';
+    errorMessage.style.color = 'rgb(255, 0, 0)';
+    errorMessage.style.borderRadius = '10px';
+    errorMessage.style.backgroundColor = 'rgba(255, 255, 255, 0.6)';
+    errorMessage.textContent = message;
+
+    document.body.insertAdjacentElement('afterbegin', errorMessage);
+
+    setTimeout(function () {
+      document.body.removeChild(errorMessage);
+    }, 10000);
   };
 
   window.util.disableItems(fieldsetsNoticeForm, true);
@@ -124,9 +148,18 @@
     window.util.drawColorBorder(inputTitle, '');
   });
 
-  resetBtn.addEventListener('click', resetClickHandler);
+  resetBtn.addEventListener('click', function (evt) {
+    evt.preventDefault();
+    resetHandler();
+  });
+
+  advertForm.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+    window.backend.save(new FormData(advertForm), resetHandler, errorHandler);
+  });
 
   document.addEventListener('DOMContentLoaded', function () {
+    inputAddress.value = 'x: 0, y: 0';
     changeSelectOptions(selectCapacity, selectRooms.value);
     window.synchronizeFields(selectType, inputPrice, typesHouseroom, minPricesHouseroom, changeMinValue);
   });
