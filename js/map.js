@@ -100,8 +100,6 @@
 
   };
 
-  // ghjcnj
-
   var updateAdverts = function () {
     var maxRank = getMaxRank();
     adverts.forEach(function (advert) {
