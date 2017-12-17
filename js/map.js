@@ -6,24 +6,137 @@
   var DOWN_LIMIT_Y = 655;
   var LEFT_LIMIT_X = 3;
   var RIGHT_LIMIT_X = 1197;
-  var AMOUNT_ADVERT = 8;
+  // var AMOUNT_ADVERT = 8;
+  var adverts = [];
   var map = document.querySelector('.map');
   var mapPinsBlock = map.querySelector('.map__pins');
   var mainPin = map.querySelector('.map__pin--main');
   var advertForm = document.querySelector('.notice__form');
   var inputAddress = advertForm.querySelector('#address');
+  var filterForm = map.querySelector('.map__filters');
+  // var filterTypeHouseroom = filterForm.querySelector('#housing-type');
+  var typeValue;
+  var priceValue;
+  var roomsValue;
+  var guestsValue;
+  var wifiValue;
 
-  var successHandler = function (adverts) {
-    var fragmentPins = document.createDocumentFragment();
-    var fragmentCard = document.createDocumentFragment();
+  var successHandler = function (data) {
+    adverts = data;
+    updateAdverts();
+  };
 
-    for (var i = 0; i < AMOUNT_ADVERT; i++) {
-      fragmentPins.appendChild(window.pin.render(adverts[i]));
-      fragmentCard.appendChild(window.card.render(adverts[i]));
+  var getMaxRank = function () {
+    var rank = 0;
+    for (var i = 0; i < filterForm.elements.length; i++) {
+      if (filterForm.elements[i].tagName === 'SELECT' && filterForm.elements[i].value !== 'any') {
+        rank += 1;
+      } else if (filterForm.elements[i].type === 'checkbox' && filterForm.elements[i].checked === true) {
+        rank += 1;
+      }
+    }
+    return rank;
+  };
+
+  var lastTimeout;
+  filterForm.addEventListener('change', function (evt) {
+    if (evt.target.id === 'housing-type') {
+      typeValue = evt.target.value;
+    }
+    if (evt.target.id === 'housing-price') {
+      priceValue = evt.target.value;
+    }
+    if (evt.target.id === 'housing-rooms') {
+      roomsValue = evt.target.value;
+    }
+    if (evt.target.id === 'housing-guests') {
+      guestsValue = evt.target.value;
+    }
+    if (evt.target.id === 'filter-wifi' && evt.target.checked === true) {
+      wifiValue = evt.target.value;
+    } else if (evt.target.id === 'filter-wifi' && evt.target.checked === false) {
+      wifiValue = '';
     }
 
+    debounce(updateAdverts);
+  });
+
+  var debounce = function (fn) {
+    if (lastTimeout) {
+      window.clearTimeout(lastTimeout);
+    }
+    lastTimeout = window.setTimeout(function () {
+      fn();
+      var pins = mapPinsBlock.querySelectorAll('.map__pin');
+      pins.forEach(function (pin) {
+        pin.classList.remove('hidden');
+      });
+    }, 500);
+  };
+
+  var render = function (data) {
+    var fragmentPins = document.createDocumentFragment();
+    var fragmentCard = document.createDocumentFragment();
+    var pins = mapPinsBlock.querySelectorAll('.map__pin');
+    var cards = map.querySelectorAll('.map__card');
+
+    pins.forEach(function (pin) {
+      if (!pin.classList.contains('map__pin--main')) {
+        mapPinsBlock.removeChild(pin);
+      }
+    });
+
+    cards.forEach(function (card) {
+      map.removeChild(card);
+    });
+
+    var amountAdvert = data.length > 5 ? 5 : data.length;
+    for (var i = 0; i < amountAdvert; i++) {
+      fragmentPins.appendChild(window.pin.render(data[i]));
+      fragmentCard.appendChild(window.card.render(data[i]));
+    }
     mapPinsBlock.insertBefore(fragmentPins, mainPin);
     map.insertBefore(fragmentCard, map.querySelector('.map__filters-container'));
+
+  };
+
+  var updateAdverts = function () {
+    var maxRank = getMaxRank();
+    adverts.forEach(function (advert) {
+      getRank(advert);
+    });
+    render(adverts.filter(function (advert) {
+      return advert.rank === maxRank;
+    }));
+  };
+
+  var getRank = function (advert) {
+    advert.rank = 0;
+    var price = parseInt(advert.offer.price, 10);
+
+    if (advert.offer.type === typeValue) {
+      advert.rank += 1;
+    }
+    if (priceValue === 'middle' && price >= 10000 && price <= 50000) {
+      advert.rank += 1;
+    } else if (priceValue === 'low' && price <= 10000) {
+      advert.rank += 1;
+    } else if (priceValue === 'high' && price >= 50000) {
+      advert.rank += 1;
+    }
+    if (parseInt(roomsValue, 10) === advert.offer.rooms) {
+      advert.rank += 1;
+    }
+    if (parseInt(guestsValue, 10) === advert.offer.guests) {
+      advert.rank += 1;
+    }
+    advert.offer.features.forEach(function (el) {
+      if (el === wifiValue) {
+        advert.rank += 1;
+      }
+    });
+
+    return advert.rank;
   };
 
   var errorHandler = function (message) {
