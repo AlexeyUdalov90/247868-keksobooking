@@ -6,24 +6,118 @@
   var DOWN_LIMIT_Y = 655;
   var LEFT_LIMIT_X = 3;
   var RIGHT_LIMIT_X = 1197;
-  var AMOUNT_ADVERT = 8;
+  var LOW_PRICE = 10000;
+  var HIGH_PRICE = 50000;
+  var adverts = [];
   var map = document.querySelector('.map');
   var mapPinsBlock = map.querySelector('.map__pins');
   var mainPin = map.querySelector('.map__pin--main');
   var advertForm = document.querySelector('.notice__form');
   var inputAddress = advertForm.querySelector('#address');
+  var filterForm = map.querySelector('.map__filters');
 
-  var successHandler = function (adverts) {
+  var filterValues = {};
+
+  var successHandler = function (data) {
+    adverts = data;
+  };
+
+  filterForm.addEventListener('change', function (evt) {
+    if (evt.target.value !== 'any' || evt.target.checked === true) {
+      filterValues[evt.target.id] = evt.target.value;
+    }
+    if (evt.target.value === 'any' || evt.target.checked === false) {
+      delete filterValues[evt.target.id];
+    }
+    window.render();
+  });
+
+  var debounce = function (fn, time) {
+    var lastTimeout;
+
+    return function () {
+      if (lastTimeout) {
+        window.clearTimeout(lastTimeout);
+      }
+
+      lastTimeout = window.setTimeout(fn, time);
+    };
+  };
+
+  window.render = debounce(function () {
     var fragmentPins = document.createDocumentFragment();
     var fragmentCard = document.createDocumentFragment();
+    var pins = mapPinsBlock.querySelectorAll('.map__pin');
+    var cards = map.querySelectorAll('.map__card');
 
-    for (var i = 0; i < AMOUNT_ADVERT; i++) {
+    pins.forEach(function (pin) {
+      if (!pin.classList.contains('map__pin--main')) {
+        mapPinsBlock.removeChild(pin);
+      }
+    });
+
+    cards.forEach(function (card) {
+      map.removeChild(card);
+    });
+
+    var count = 0;
+
+    for (var i = 0; i < adverts.length; i++) {
+      var price = parseInt(adverts[i].offer.price, 10);
+      if (count > 4) {
+        break;
+      }
+      if (filterValues['housing-type'] && adverts[i].offer.type !== filterValues['housing-type']) {
+        continue;
+      }
+      if (filterValues['housing-price']) {
+        if (filterValues['housing-price'] === 'middle' && (price < LOW_PRICE || price > HIGH_PRICE)) {
+          continue;
+        }
+        if (filterValues['housing-price'] === 'low' && price > LOW_PRICE) {
+          continue;
+        }
+        if (filterValues['housing-price'] === 'high' && price < HIGH_PRICE) {
+          continue;
+        }
+      }
+      if (filterValues['housing-rooms'] && adverts[i].offer.rooms !== parseInt(filterValues['housing-rooms'], 10)) {
+        continue;
+      }
+      if (filterValues['housing-guests'] && adverts[i].offer.guests !== parseInt(filterValues['housing-guests'], 10)) {
+        continue;
+      }
+      if (filterValues['filter-wifi'] && findFeature(adverts[i].offer.features, filterValues['filter-wifi']) !== true) {
+        continue;
+      }
+      if (filterValues['filter-dishwasher'] && findFeature(adverts[i].offer.features, filterValues['filter-dishwasher']) !== true) {
+        continue;
+      }
+      if (filterValues['filter-parking'] && findFeature(adverts[i].offer.features, filterValues['filter-parking']) !== true) {
+        continue;
+      }
+      if (filterValues['filter-washer'] && findFeature(adverts[i].offer.features, filterValues['filter-washer']) !== true) {
+        continue;
+      }
+      if (filterValues['filter-elevator'] && findFeature(adverts[i].offer.features, filterValues['filter-elevator']) !== true) {
+        continue;
+      }
+      if (filterValues['filter-conditioner'] && findFeature(adverts[i].offer.features, filterValues['filter-conditioner']) !== true) {
+        continue;
+      }
       fragmentPins.appendChild(window.pin.render(adverts[i]));
       fragmentCard.appendChild(window.card.render(adverts[i]));
+      count += 1;
     }
-
     mapPinsBlock.insertBefore(fragmentPins, mainPin);
     map.insertBefore(fragmentCard, map.querySelector('.map__filters-container'));
+
+  }, 500);
+
+  var findFeature = function (array, value) {
+    return array.some(function (elArray) {
+      return elArray === value;
+    });
   };
 
   var errorHandler = function (message) {
