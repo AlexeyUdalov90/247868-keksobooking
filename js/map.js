@@ -6,7 +6,8 @@
   var DOWN_LIMIT_Y = 655;
   var LEFT_LIMIT_X = 3;
   var RIGHT_LIMIT_X = 1197;
-  // var AMOUNT_ADVERT = 8;
+  var LOW_PRICE = 10000;
+  var HIGH_PRICE = 50000;
   var adverts = [];
   var map = document.querySelector('.map');
   var mapPinsBlock = map.querySelector('.map__pins');
@@ -14,67 +15,36 @@
   var advertForm = document.querySelector('.notice__form');
   var inputAddress = advertForm.querySelector('#address');
   var filterForm = map.querySelector('.map__filters');
-  // var filterTypeHouseroom = filterForm.querySelector('#housing-type');
-  var typeValue;
-  var priceValue;
-  var roomsValue;
-  var guestsValue;
-  var wifiValue;
+
+  var filterValues = {};
 
   var successHandler = function (data) {
     adverts = data;
-    updateAdverts();
   };
 
-  var getMaxRank = function () {
-    var rank = 0;
-    for (var i = 0; i < filterForm.elements.length; i++) {
-      if (filterForm.elements[i].tagName === 'SELECT' && filterForm.elements[i].value !== 'any') {
-        rank += 1;
-      } else if (filterForm.elements[i].type === 'checkbox' && filterForm.elements[i].checked === true) {
-        rank += 1;
-      }
-    }
-    return rank;
-  };
-
-  var lastTimeout;
   filterForm.addEventListener('change', function (evt) {
-    if (evt.target.id === 'housing-type') {
-      typeValue = evt.target.value;
+    if (evt.target.value !== 'any' || evt.target.checked === true) {
+      filterValues[evt.target.id] = evt.target.value;
     }
-    if (evt.target.id === 'housing-price') {
-      priceValue = evt.target.value;
+    if (evt.target.value === 'any' || evt.target.checked === false) {
+      delete filterValues[evt.target.id];
     }
-    if (evt.target.id === 'housing-rooms') {
-      roomsValue = evt.target.value;
-    }
-    if (evt.target.id === 'housing-guests') {
-      guestsValue = evt.target.value;
-    }
-    if (evt.target.id === 'filter-wifi' && evt.target.checked === true) {
-      wifiValue = evt.target.value;
-    } else if (evt.target.id === 'filter-wifi' && evt.target.checked === false) {
-      wifiValue = '';
-    }
-
-    debounce(updateAdverts);
+    window.render();
   });
 
-  var debounce = function (fn) {
-    if (lastTimeout) {
-      window.clearTimeout(lastTimeout);
-    }
-    lastTimeout = window.setTimeout(function () {
-      fn();
-      var pins = mapPinsBlock.querySelectorAll('.map__pin');
-      pins.forEach(function (pin) {
-        pin.classList.remove('hidden');
-      });
-    }, 500);
+  var debounce = function (fn, time) {
+    var lastTimeout;
+
+    return function () {
+      if (lastTimeout) {
+        window.clearTimeout(lastTimeout);
+      }
+
+      lastTimeout = window.setTimeout(fn, time);
+    };
   };
 
-  var render = function (data) {
+  window.render = debounce(function () {
     var fragmentPins = document.createDocumentFragment();
     var fragmentCard = document.createDocumentFragment();
     var pins = mapPinsBlock.querySelectorAll('.map__pin');
@@ -90,53 +60,64 @@
       map.removeChild(card);
     });
 
-    var amountAdvert = data.length > 5 ? 5 : data.length;
-    for (var i = 0; i < amountAdvert; i++) {
-      fragmentPins.appendChild(window.pin.render(data[i]));
-      fragmentCard.appendChild(window.card.render(data[i]));
+    var count = 0;
+
+    for (var i = 0; i < adverts.length; i++) {
+      var price = parseInt(adverts[i].offer.price, 10);
+      if (count > 4) {
+        break;
+      }
+      if (filterValues['housing-type'] && adverts[i].offer.type !== filterValues['housing-type']) {
+        continue;
+      }
+      if (filterValues['housing-price']) {
+        if (filterValues['housing-price'] === 'middle' && (price < LOW_PRICE || price > HIGH_PRICE)) {
+          continue;
+        }
+        if (filterValues['housing-price'] === 'low' && price > LOW_PRICE) {
+          continue;
+        }
+        if (filterValues['housing-price'] === 'high' && price < HIGH_PRICE) {
+          continue;
+        }
+      }
+      if (filterValues['housing-rooms'] && adverts[i].offer.rooms !== parseInt(filterValues['housing-rooms'], 10)) {
+        continue;
+      }
+      if (filterValues['housing-guests'] && adverts[i].offer.guests !== parseInt(filterValues['housing-guests'], 10)) {
+        continue;
+      }
+      if (filterValues['filter-wifi'] && findFeature(adverts[i].offer.features, filterValues['filter-wifi']) !== true) {
+        continue;
+      }
+      if (filterValues['filter-dishwasher'] && findFeature(adverts[i].offer.features, filterValues['filter-dishwasher']) !== true) {
+        continue;
+      }
+      if (filterValues['filter-parking'] && findFeature(adverts[i].offer.features, filterValues['filter-parking']) !== true) {
+        continue;
+      }
+      if (filterValues['filter-washer'] && findFeature(adverts[i].offer.features, filterValues['filter-washer']) !== true) {
+        continue;
+      }
+      if (filterValues['filter-elevator'] && findFeature(adverts[i].offer.features, filterValues['filter-elevator']) !== true) {
+        continue;
+      }
+      if (filterValues['filter-conditioner'] && findFeature(adverts[i].offer.features, filterValues['filter-conditioner']) !== true) {
+        continue;
+      }
+      fragmentPins.appendChild(window.pin.render(adverts[i]));
+      fragmentCard.appendChild(window.card.render(adverts[i]));
+      count += 1;
     }
     mapPinsBlock.insertBefore(fragmentPins, mainPin);
     map.insertBefore(fragmentCard, map.querySelector('.map__filters-container'));
 
-  };
+  }, 500);
 
-  var updateAdverts = function () {
-    var maxRank = getMaxRank();
-    adverts.forEach(function (advert) {
-      getRank(advert);
+  var findFeature = function (array, value) {
+    return array.some(function (elArray) {
+      return elArray === value;
     });
-    render(adverts.filter(function (advert) {
-      return advert.rank === maxRank;
-    }));
-  };
-
-  var getRank = function (advert) {
-    advert.rank = 0;
-    var price = parseInt(advert.offer.price, 10);
-
-    if (advert.offer.type === typeValue) {
-      advert.rank += 1;
-    }
-    if (priceValue === 'middle' && price >= 10000 && price <= 50000) {
-      advert.rank += 1;
-    } else if (priceValue === 'low' && price <= 10000) {
-      advert.rank += 1;
-    } else if (priceValue === 'high' && price >= 50000) {
-      advert.rank += 1;
-    }
-    if (parseInt(roomsValue, 10) === advert.offer.rooms) {
-      advert.rank += 1;
-    }
-    if (parseInt(guestsValue, 10) === advert.offer.guests) {
-      advert.rank += 1;
-    }
-    advert.offer.features.forEach(function (el) {
-      if (el === wifiValue) {
-        advert.rank += 1;
-      }
-    });
-
-    return advert.rank;
   };
 
   var errorHandler = function (message) {

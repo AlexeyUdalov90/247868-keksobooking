@@ -34,7 +34,7 @@
       pinElement.style.left = advert.location.x - SHIFT_PIN_LEFT + 'px';
       pinElement.style.top = advert.location.y - SHIFT_PIN_TOP + 'px';
       pinElement.querySelector('img').src = advert.author.avatar;
-      pinElement.classList.add('hidden');
+      // pinElement.classList.add('hidden');
       pinElement.addEventListener('click', window.pin.clickHandler);
 
       return pinElement;
@@ -46,11 +46,8 @@
   window.pin.callback = window.showCard;
 
   mainPin.addEventListener('mouseup', function () {
-    var pins = document.querySelectorAll('.map .map__pin');
     map.classList.remove('map--faded');
-    pins.forEach(function (pin) {
-      pin.classList.remove('hidden');
-    });
+    window.render();
     advertForm.classList.remove('notice__form--disabled');
     window.util.disableItems(fieldsetsNoticeForm, false);
   });
