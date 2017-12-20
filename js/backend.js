@@ -5,14 +5,14 @@
   var URL_SAVE = 'https://1510.dump.academy/keksobooking';
 
   window.backend = {
-    load: function (onLoad, onError) {
+    load: function (onError) {
       var xhr = new XMLHttpRequest();
       xhr.responseType = 'json';
 
       xhr.addEventListener('load', function () {
         switch (xhr.status) {
           case 200:
-            onLoad(xhr.response);
+            window.backend.adverts = xhr.response;
             break;
           default:
             onError('Произошла ошибка загрузки: ' + xhr.status + xhr.statusText);
@@ -58,6 +58,8 @@
 
       xhr.open('POST', URL_SAVE);
       xhr.send(data);
-    }
+    },
+
+    adverts: []
   };
 })();
