@@ -3,9 +3,8 @@
 (function () {
   var ESC_KEYCODE = 27;
   var mapCardTemplate = document.querySelector('template').content.querySelector('.map__card');
-  var fragmentFeatures = document.createDocumentFragment();
 
-  var typesHouseroom = {
+  var houseRoomTypes = {
     flat: 'Квартира',
     bungalo: 'Лачуга',
     house: 'Дом',
@@ -43,7 +42,7 @@
       cardElement.querySelector('h3').textContent = advert.offer.title;
       cardElement.querySelector('p > small').textContent = advert.offer.address;
       cardElement.querySelector('.popup__price').innerHTML = advert.offer.price + '&#x20bd;/ночь';
-      cardElement.querySelector('h4').textContent = typesHouseroom[advert.offer.type];
+      cardElement.querySelector('h4').textContent = houseRoomTypes[advert.offer.type];
       cardElement.querySelector('h4 + p').textContent = advert.offer.rooms + ' комнаты для ' + advert.offer.guests + ' гостей';
       cardElement.querySelector('h4 + p + p').textContent = 'Заезд после ' + advert.offer.checkin + ', выезд до ' + advert.offer.checkout;
       cardElement.querySelector('.popup__features + p').textContent = advert.offer.description;
@@ -55,17 +54,18 @@
   };
 
   var createFeatures = function (features) {
-    var featureItems = document.createElement('ul');
-    featureItems.className = '.popup__features';
+    var featuresFragment = document.createDocumentFragment();
+    var featureList = document.createElement('ul');
+    featureList.className = '.popup__features';
 
     features.forEach(function (feature) {
       var featureElement = document.createElement('li');
       featureElement.className = 'feature feature--' + feature;
-      featureItems.appendChild(featureElement);
+      featureList.appendChild(featureElement);
     });
 
-    fragmentFeatures.appendChild(featureItems);
-    return fragmentFeatures;
+    featuresFragment.appendChild(featureList);
+    return featuresFragment;
   };
 
 })();

@@ -9,21 +9,21 @@
   var advertForm = document.querySelector('.notice__form');
   var fieldsetsNoticeForm = advertForm.querySelectorAll('fieldset');
 
-  var clickedPin = null;
-  var showedCard = null;
+  var chosenPin = null;
+  var chosenCard = null;
 
   window.pin = {
     clickHandler: function (evt) {
       if (!evt.currentTarget.classList.contains('map__pin--main')) {
-        if (clickedPin && showedCard) {
-          clickedPin.classList.remove('map__pin--active');
-          showedCard.classList.add('hidden');
+        if (chosenPin && chosenCard) {
+          chosenPin.classList.remove('map__pin--active');
+          chosenCard.classList.add('hidden');
         }
-        clickedPin = evt.currentTarget;
-        clickedPin.classList.add('map__pin--active');
+        chosenPin = evt.currentTarget;
+        chosenPin.classList.add('map__pin--active');
         var srcImagePin = evt.currentTarget.children[0].src;
         if (typeof window.pin.callback === 'function') {
-          showedCard = window.pin.callback(srcImagePin);
+          chosenCard = window.pin.callback(srcImagePin);
         }
       }
     },

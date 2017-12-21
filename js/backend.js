@@ -1,13 +1,28 @@
 'use strict';
 
 (function () {
-  var URL_LOAD = 'https://1510.dump.academy/keksobooking/data';
-  var URL_SAVE = 'https://1510.dump.academy/keksobooking';
+  var LOAD_URL = 'https://1510.dump.academy/keksobooking/data';
+  var SAVE_URL = 'https://1510.dump.academy/keksobooking';
+
+  var createXhr = function (onError) {
+    var xhr = new XMLHttpRequest();
+    xhr.responseType = 'json';
+    xhr.timeout = 20000;
+
+    xhr.addEventListener('error', function () {
+      onError('Произошла ошибка соединения');
+    });
+
+    xhr.addEventListener('timeout', function () {
+      onError('Время ожидания ответа ' + xhr.timeout + 'мс истекло');
+    });
+
+    return xhr;
+  };
 
   window.backend = {
     load: function (onError) {
-      var xhr = new XMLHttpRequest();
-      xhr.responseType = 'json';
+      var xhr = createXhr(onError);
 
       xhr.addEventListener('load', function () {
         switch (xhr.status) {
@@ -19,22 +34,12 @@
         }
       });
 
-      xhr.addEventListener('error', function () {
-        onError('Произошла ошибка соединения');
-      });
-
-      xhr.addEventListener('timeout', function () {
-        onError('Время ожидания ответа ' + xhr.timeout + 'мс истекло');
-      });
-
-      xhr.timeout = 20000;
-      xhr.open('GET', URL_LOAD);
+      xhr.open('GET', LOAD_URL);
       xhr.send();
     },
 
     save: function (data, onLoad, onError) {
-      var xhr = new XMLHttpRequest();
-      xhr.responseType = 'json';
+      var xhr = createXhr(onError);
 
       xhr.addEventListener('load', function () {
         switch (xhr.status) {
@@ -46,17 +51,7 @@
         }
       });
 
-      xhr.addEventListener('error', function () {
-        onError('Произошла ошибка соединения');
-      });
-
-      xhr.addEventListener('timeout', function () {
-        onError('Время ожидания ответа ' + xhr.timeout + 'мс истекло');
-      });
-
-      xhr.timeout = 20000;
-
-      xhr.open('POST', URL_SAVE);
+      xhr.open('POST', SAVE_URL);
       xhr.send(data);
     },
 

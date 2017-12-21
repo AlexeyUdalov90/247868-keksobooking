@@ -1,26 +1,26 @@
 'use strict';
 
 (function () {
-  var advertForm = document.querySelector('.notice__form');
-  var fieldsetsNoticeForm = advertForm.querySelectorAll('fieldset');
-  var selectTimeIn = advertForm.querySelector('#timein');
-  var selectTimeOut = advertForm.querySelector('#timeout');
-  var selectType = advertForm.querySelector('#type');
-  var inputPrice = advertForm.querySelector('#price');
-  var selectRooms = advertForm.querySelector('#room_number');
-  var selectCapacity = advertForm.querySelector('#capacity');
-  var inputTitle = advertForm.querySelector('#title');
-  var inputAddress = advertForm.querySelector('#address');
-  var resetBtn = advertForm.querySelector('.form__reset');
-  var features = advertForm.querySelectorAll('.features input[type = "checkbox"]');
-  var description = advertForm.querySelector('#description');
+  var formAdvert = document.querySelector('.notice__form');
+  var formFieldsets = formAdvert.querySelectorAll('fieldset');
+  var selectTimeIn = formAdvert.querySelector('#timein');
+  var selectTimeOut = formAdvert.querySelector('#timeout');
+  var selectType = formAdvert.querySelector('#type');
+  var inputPrice = formAdvert.querySelector('#price');
+  var selectRoom = formAdvert.querySelector('#room_number');
+  var selectCapacity = formAdvert.querySelector('#capacity');
+  var inputTitle = formAdvert.querySelector('#title');
+  var inputAddress = formAdvert.querySelector('#address');
+  var resetBtn = formAdvert.querySelector('.form__reset');
+  var features = formAdvert.querySelectorAll('.features input[type = "checkbox"]');
+  var description = formAdvert.querySelector('#description');
 
-  var minPricesHouseroom = ['1000', '0', '5000', '10000'];
-  var typesHouseroom = ['flat', 'bungalo', 'house', 'palace'];
+  var houseRoomMinPrices = ['1000', '0', '5000', '10000'];
+  var houseRoomTypes = ['flat', 'bungalo', 'house', 'palace'];
   var timesIn = ['12:00', '13:00', '14:00'];
   var timesOut = ['12:00', '13:00', '14:00'];
 
-  var getStandSelectedValue = function (select) {
+  var selectDefaultValue = function (select) {
     for (var i = 0; i < select.options.length; i++) {
       if (select.options[i].hasAttribute('selected')) {
         select.options[i].selected = true;
@@ -33,7 +33,7 @@
   };
 
   var changeSelectOptions = function () {
-    var valueRoom = selectRooms.value;
+    var valueRoom = selectRoom.value;
     window.util.disableItems(selectCapacity.options, false);
     for (var i = 0; i < selectCapacity.options.length; i++) {
       var itemCapacity = selectCapacity.options[i];
@@ -56,41 +56,19 @@
     inputTitle.value = '';
     inputAddress.value = 'x: 0, y: 0';
     inputPrice.value = inputPrice.getAttribute('value');
-    getStandSelectedValue(selectType);
-    getStandSelectedValue(selectRooms);
-    getStandSelectedValue(selectTimeIn);
-    window.synchronizeFields(selectType, inputPrice, typesHouseroom, minPricesHouseroom, changeMinValue);
+    selectDefaultValue(selectType);
+    selectDefaultValue(selectRoom);
+    selectDefaultValue(selectTimeIn);
+    window.synchronizeFields(selectType, inputPrice, houseRoomTypes, houseRoomMinPrices, changeMinValue);
     features.forEach(function (item) {
       item.checked = false;
     });
-    changeSelectOptions(selectCapacity, selectRooms.value);
+    changeSelectOptions(selectCapacity, selectRoom.value);
     window.synchronizeFields(selectType, inputPrice, changeMinValue);
     description.value = '';
   };
 
-  var errorHandler = function (message) {
-    var errorMessage = document.createElement('div');
-    errorMessage.style.position = 'fixed';
-    errorMessage.style.right = '20px';
-    errorMessage.style.top = '20px';
-    errorMessage.style.zIndex = '100';
-    errorMessage.style.margin = '0';
-    errorMessage.style.padding = '10px';
-    errorMessage.style.fontSize = '18px';
-    errorMessage.style.fontWeight = '700';
-    errorMessage.style.color = 'rgb(255, 0, 0)';
-    errorMessage.style.borderRadius = '10px';
-    errorMessage.style.backgroundColor = 'rgba(255, 255, 255, 0.6)';
-    errorMessage.textContent = message;
-
-    document.body.insertAdjacentElement('afterbegin', errorMessage);
-
-    setTimeout(function () {
-      document.body.removeChild(errorMessage);
-    }, 10000);
-  };
-
-  window.util.disableItems(fieldsetsNoticeForm, true);
+  window.util.disableItems(formFieldsets, true);
 
   selectTimeIn.addEventListener('change', function () {
     window.synchronizeFields(selectTimeIn, selectTimeOut, timesIn, timesOut, syncValues);
@@ -101,11 +79,11 @@
   });
 
   selectType.addEventListener('change', function () {
-    window.synchronizeFields(selectType, inputPrice, typesHouseroom, minPricesHouseroom, changeMinValue);
+    window.synchronizeFields(selectType, inputPrice, houseRoomTypes, houseRoomMinPrices, changeMinValue);
   });
 
-  selectRooms.addEventListener('change', function () {
-    changeSelectOptions(selectCapacity, selectRooms.value);
+  selectRoom.addEventListener('change', function () {
+    changeSelectOptions(selectCapacity, selectRoom.value);
   });
 
 
@@ -126,10 +104,10 @@
 
   inputTitle.addEventListener('invalid', function () {
     if (inputTitle.validity.tooShort) {
-      inputTitle.setCustomValidity('Заголовок должен состоять минимум из ' + inputTitle.minlength + ' символов');
+      inputTitle.setCustomValidity('Заголовок должен состоять минимум из ' + inputTitle.minLength + ' символов');
       window.util.drawColorBorder(inputTitle, 'red');
     } else if (inputTitle.validity.tooLong) {
-      inputTitle.setCustomValidity('Заголовок должен состоять максимум из ' + inputTitle.maxlength + ' символов');
+      inputTitle.setCustomValidity('Заголовок должен состоять максимум из ' + inputTitle.maxLength + ' символов');
       window.util.drawColorBorder(inputTitle, 'red');
     } else if (inputTitle.validity.valueMissing) {
       inputTitle.setCustomValidity('Поле обязательно для заполнения');
@@ -152,15 +130,13 @@
     resetHandler();
   });
 
-  advertForm.addEventListener('submit', function (evt) {
+  formAdvert.addEventListener('submit', function (evt) {
     evt.preventDefault();
-    window.backend.save(new FormData(advertForm), resetHandler, errorHandler);
+    window.backend.save(new FormData(formAdvert), resetHandler, window.showError);
   });
 
-  document.addEventListener('DOMContentLoaded', function () {
-    inputAddress.value = 'x: 0, y: 0';
-    changeSelectOptions(selectCapacity, selectRooms.value);
-    window.synchronizeFields(selectType, inputPrice, typesHouseroom, minPricesHouseroom, changeMinValue);
-  });
+  inputAddress.value = 'x: 0, y: 0';
+  changeSelectOptions(selectCapacity, selectRoom.value);
+  window.synchronizeFields(selectType, inputPrice, houseRoomTypes, houseRoomMinPrices, changeMinValue);
 
 })();
