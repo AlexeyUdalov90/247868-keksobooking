@@ -1,6 +1,6 @@
 'use strict';
 (function () {
-  var SHIFT_MAINPIN_Y = 47;
+  var SHIFT_MAINPIN_TOP = 47;
   var UP_LIMIT = 53;
   var DOWN_LIMIT = 453;
   var LEFT_LIMIT = 3;
@@ -12,7 +12,7 @@
   var blockPin = map.querySelector('.map__pins');
   var mainPin = map.querySelector('.map__pin--main');
   var advertForm = document.querySelector('.notice__form');
-  var inputAddress = advertForm.querySelector('#address');
+  var advertAddress = advertForm.querySelector('#address');
   var filterForm = map.querySelector('.map__filters');
 
   var filterValue = {};
@@ -135,7 +135,7 @@
     var mouseMoveHandler = function (moveEvt) {
       moveEvt.preventDefault();
 
-      var shift = {
+      var shiftCoords = {
         x: startCoords.x - moveEvt.clientX,
         y: startCoords.y - moveEvt.clientY
       };
@@ -145,10 +145,10 @@
         y: moveEvt.clientY
       };
 
-      mainPin.style.top = getCoord(mainPin.offsetTop - shift.y, UP_LIMIT, DOWN_LIMIT) + 'px';
-      mainPin.style.left = getCoord(mainPin.offsetLeft - shift.x, LEFT_LIMIT, RIGHT_LIMIT) + 'px';
+      mainPin.style.top = getCoord(mainPin.offsetTop - shiftCoords.y, UP_LIMIT, DOWN_LIMIT) + 'px';
+      mainPin.style.left = getCoord(mainPin.offsetLeft - shiftCoords.x, LEFT_LIMIT, RIGHT_LIMIT) + 'px';
 
-      inputAddress.value = 'x: ' + parseFloat(mainPin.style.left) + ', y: ' + (parseFloat(mainPin.style.top) + SHIFT_MAINPIN_Y);
+      advertAddress.value = 'x: ' + parseFloat(mainPin.style.left) + ', y: ' + (parseFloat(mainPin.style.top) + SHIFT_MAINPIN_TOP);
     };
 
     var mouseUpHandler = function (upEvt) {

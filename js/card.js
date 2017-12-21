@@ -2,7 +2,7 @@
 
 (function () {
   var ESC_KEYCODE = 27;
-  var mapCardTemplate = document.querySelector('template').content.querySelector('.map__card');
+  var cardTemplate = document.querySelector('template').content.querySelector('.map__card');
 
   var houseRoomTypes = {
     flat: 'Квартира',
@@ -35,7 +35,7 @@
     },
 
     render: function (advert) {
-      var cardElement = mapCardTemplate.cloneNode(true);
+      var cardElement = cardTemplate.cloneNode(true);
 
       cardElement.classList.add('hidden');
       cardElement.querySelector('img').src = advert.author.avatar;

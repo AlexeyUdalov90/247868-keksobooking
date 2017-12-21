@@ -3,11 +3,12 @@
 (function () {
   var LOAD_URL = 'https://1510.dump.academy/keksobooking/data';
   var SAVE_URL = 'https://1510.dump.academy/keksobooking';
+  var DELAY = 20000;
 
   var createXhr = function (onError) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
-    xhr.timeout = 20000;
+    xhr.timeout = DELAY;
 
     xhr.addEventListener('error', function () {
       onError('Произошла ошибка соединения');
