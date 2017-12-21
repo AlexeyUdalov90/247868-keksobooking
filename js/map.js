@@ -8,7 +8,6 @@
   var RIGHT_LIMIT_X = 1197;
   var LOW_PRICE = 10000;
   var HIGH_PRICE = 50000;
-  var adverts = [];
   var map = document.querySelector('.map');
   var mapPinsBlock = map.querySelector('.map__pins');
   var mainPin = map.querySelector('.map__pin--main');
@@ -16,23 +15,19 @@
   var inputAddress = advertForm.querySelector('#address');
   var filterForm = map.querySelector('.map__filters');
 
-  var filterValues = {};
-
-  var successHandler = function (data) {
-    adverts = data;
-  };
+  var filterValue = {};
 
   filterForm.addEventListener('change', function (evt) {
     if (evt.target.value !== 'any' || evt.target.checked === true) {
-      filterValues[evt.target.id] = evt.target.value;
+      filterValue[evt.target.id] = evt.target.value;
     }
     if (evt.target.value === 'any' || evt.target.checked === false) {
-      delete filterValues[evt.target.id];
+      delete filterValue[evt.target.id];
     }
     window.render();
   });
 
-  var debounce = function (fn, time) {
+  var debounce = function (callback, time) {
     var lastTimeout;
 
     return function () {
@@ -40,7 +35,7 @@
         window.clearTimeout(lastTimeout);
       }
 
-      lastTimeout = window.setTimeout(fn, time);
+      lastTimeout = window.setTimeout(callback, time);
     };
   };
 
@@ -62,63 +57,57 @@
 
     var count = 0;
 
-    for (var i = 0; i < adverts.length; i++) {
-      var price = parseInt(adverts[i].offer.price, 10);
+    for (var i = 0; i < window.backend.adverts.length; i++) {
+      var price = parseInt(window.backend.adverts[i].offer.price, 10);
       if (count > 4) {
         break;
       }
-      if (filterValues['housing-type'] && adverts[i].offer.type !== filterValues['housing-type']) {
+      if (filterValue['housing-type'] && window.backend.adverts[i].offer.type !== filterValue['housing-type']) {
         continue;
       }
-      if (filterValues['housing-price']) {
-        if (filterValues['housing-price'] === 'middle' && (price < LOW_PRICE || price > HIGH_PRICE)) {
+      if (filterValue['housing-price']) {
+        if (filterValue['housing-price'] === 'middle' && (price < LOW_PRICE || price > HIGH_PRICE)) {
           continue;
         }
-        if (filterValues['housing-price'] === 'low' && price > LOW_PRICE) {
+        if (filterValue['housing-price'] === 'low' && price > LOW_PRICE) {
           continue;
         }
-        if (filterValues['housing-price'] === 'high' && price < HIGH_PRICE) {
+        if (filterValue['housing-price'] === 'high' && price < HIGH_PRICE) {
           continue;
         }
       }
-      if (filterValues['housing-rooms'] && adverts[i].offer.rooms !== parseInt(filterValues['housing-rooms'], 10)) {
+      if (filterValue['housing-rooms'] && window.backend.adverts[i].offer.rooms !== parseInt(filterValue['housing-rooms'], 10)) {
         continue;
       }
-      if (filterValues['housing-guests'] && adverts[i].offer.guests !== parseInt(filterValues['housing-guests'], 10)) {
+      if (filterValue['housing-guests'] && window.backend.adverts[i].offer.guests !== parseInt(filterValue['housing-guests'], 10)) {
         continue;
       }
-      if (filterValues['filter-wifi'] && findFeature(adverts[i].offer.features, filterValues['filter-wifi']) !== true) {
+      if (filterValue['filter-wifi'] && window.util.hasItemInArray(window.backend.adverts[i].offer.features, filterValue['filter-wifi']) !== true) {
         continue;
       }
-      if (filterValues['filter-dishwasher'] && findFeature(adverts[i].offer.features, filterValues['filter-dishwasher']) !== true) {
+      if (filterValue['filter-dishwasher'] && window.util.hasItemInArray(window.backend.adverts[i].offer.features, filterValue['filter-dishwasher']) !== true) {
         continue;
       }
-      if (filterValues['filter-parking'] && findFeature(adverts[i].offer.features, filterValues['filter-parking']) !== true) {
+      if (filterValue['filter-parking'] && window.util.hasItemInArray(window.backend.adverts[i].offer.features, filterValue['filter-parking']) !== true) {
         continue;
       }
-      if (filterValues['filter-washer'] && findFeature(adverts[i].offer.features, filterValues['filter-washer']) !== true) {
+      if (filterValue['filter-washer'] && window.util.hasItemInArray(window.backend.adverts[i].offer.features, filterValue['filter-washer']) !== true) {
         continue;
       }
-      if (filterValues['filter-elevator'] && findFeature(adverts[i].offer.features, filterValues['filter-elevator']) !== true) {
+      if (filterValue['filter-elevator'] && window.util.hasItemInArray(window.backend.adverts[i].offer.features, filterValue['filter-elevator']) !== true) {
         continue;
       }
-      if (filterValues['filter-conditioner'] && findFeature(adverts[i].offer.features, filterValues['filter-conditioner']) !== true) {
+      if (filterValue['filter-conditioner'] && window.util.hasItemInArray(window.backend.adverts[i].offer.features, filterValue['filter-conditioner']) !== true) {
         continue;
       }
-      fragmentPins.appendChild(window.pin.render(adverts[i]));
-      fragmentCard.appendChild(window.card.render(adverts[i]));
+      fragmentPins.appendChild(window.pin.render(window.backend.adverts[i]));
+      fragmentCard.appendChild(window.card.render(window.backend.adverts[i]));
       count += 1;
     }
     mapPinsBlock.insertBefore(fragmentPins, mainPin);
     map.insertBefore(fragmentCard, map.querySelector('.map__filters-container'));
 
   }, 500);
-
-  var findFeature = function (array, value) {
-    return array.some(function (elArray) {
-      return elArray === value;
-    });
-  };
 
   var errorHandler = function (message) {
     var errorMessage = document.createElement('div');
@@ -160,7 +149,7 @@
     return x;
   };
 
-  window.backend.load(successHandler, errorHandler);
+  window.backend.load(errorHandler);
 
   mainPin.addEventListener('mousedown', function (evt) {
     evt.preventDefault();

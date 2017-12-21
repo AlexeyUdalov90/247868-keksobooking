@@ -27,6 +27,12 @@
 
     drawColorBorder: function (item, color) {
       item.style.borderColor = color;
+    },
+
+    hasItemInArray: function (array, value) {
+      return array.some(function (elArray) {
+        return elArray === value;
+      });
     }
   };
 })();

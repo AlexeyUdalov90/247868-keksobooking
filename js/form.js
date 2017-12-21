@@ -55,7 +55,6 @@
   var resetHandler = function () {
     inputTitle.value = '';
     inputAddress.value = 'x: 0, y: 0';
-    inputAddress.value = '';
     inputPrice.value = inputPrice.getAttribute('value');
     getStandSelectedValue(selectType);
     getStandSelectedValue(selectRooms);

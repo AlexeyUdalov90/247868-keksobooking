@@ -34,7 +34,6 @@
       pinElement.style.left = advert.location.x - SHIFT_PIN_LEFT + 'px';
       pinElement.style.top = advert.location.y - SHIFT_PIN_TOP + 'px';
       pinElement.querySelector('img').src = advert.author.avatar;
-      // pinElement.classList.add('hidden');
       pinElement.addEventListener('click', window.pin.clickHandler);
 
       return pinElement;
