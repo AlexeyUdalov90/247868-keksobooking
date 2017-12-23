@@ -96,13 +96,20 @@
       var advert = window.backend.adverts[i];
       var offer = advert.offer;
 
-      switch (false) {
-        case checkFilter(filterValue['housing-type'], offer.type):
-        case checkFilter(filterValue['housing-price'], getPrice(offer.price)):
-        case checkFilter(+filterValue['housing-rooms'], offer.rooms):
-        case checkFilter(+filterValue['housing-guests'], offer.guests):
-        case checkFilters(filterValue, items, offer.features):
-          continue;
+      if (!checkFilter(filterValue['housing-type'], offer.type)) {
+        continue;
+      }
+      if (!checkFilter(filterValue['housing-price'], getPrice(offer.price))) {
+        continue;
+      }
+      if (!checkFilter(+filterValue['housing-rooms'], offer.rooms)) {
+        continue;
+      }
+      if (!checkFilter(+filterValue['housing-guests'], offer.guests)) {
+        continue;
+      }
+      if (!checkFilters(filterValue, items, offer.features)) {
+        continue;
       }
 
       pinFragment.appendChild(window.pin.render(window.backend.adverts[i]));

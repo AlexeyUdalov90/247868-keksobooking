@@ -35,14 +35,14 @@
   };
 
   var changeSelectOptions = function () {
-    var valueRoom = advertRoom.value;
+    var valueRoom = +advertRoom.value;
     window.util.disableItems(advertCapacity.options, false);
     for (var i = 0; i < advertCapacity.options.length; i++) {
       var itemCapacity = advertCapacity.options[i];
-      var valueCapacity = itemCapacity.value;
-      if (+valueRoom === MAX_ROOM && +valueCapacity === MIN_CAPACITY) {
+      var valueCapacity = +itemCapacity.value;
+      if (valueRoom === MAX_ROOM && valueCapacity === MIN_CAPACITY) {
         itemCapacity.selected = true;
-      } else if (valueRoom >= valueCapacity && +valueRoom !== MAX_ROOM && +valueCapacity !== MIN_CAPACITY) {
+      } else if (valueRoom >= valueCapacity && valueRoom !== MAX_ROOM && valueCapacity !== MIN_CAPACITY) {
         itemCapacity.selected = true;
       } else {
         itemCapacity.disabled = true;
